@@ -1,11 +1,17 @@
 "use client";
 // Main client component for stepwise problem-solving workflow
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { ProblemEntryStep } from "./ProblemEntryStep";
 import { ReasonsStep } from "./ReasonsStep";
 import { ExpectedSolutionStep } from "./ExpectedSolutionStep";
 import { WaysToSolveStep } from "./WaysToSolveStep";
+import {
+  saveSession,
+  loadSession,
+  clearSession,
+} from "../lib/localStorageSession";
+import type { ProblemSession } from "../lib/types";
 
 const STEP_TITLES = [
   "Problem Entry",
@@ -32,6 +38,44 @@ export function StepwiseWorkflow() {
   const [waysToSolveError, setWaysToSolveError] = useState<string | undefined>(
     undefined
   );
+  const [loaded, setLoaded] = useState(false);
+
+  // Load session on mount
+  useEffect(() => {
+    const session = loadSession();
+    if (session) {
+      setProblem(session.problem);
+      setReasons(session.reasons);
+      setExpectedSolution(session.expectedSolution);
+      setWaysToSolve(session.waysToSolve);
+      setStep(0);
+      window.alert("Session loaded from previous visit.");
+    }
+    setLoaded(true);
+  }, []);
+
+  // Auto-save session on state change (after initial load)
+  useEffect(() => {
+    if (!loaded) return;
+    const session: ProblemSession = {
+      problem,
+      reasons,
+      expectedSolution,
+      waysToSolve,
+    };
+    saveSession(session);
+    // Optionally show a notification (window.alert is intrusive, so skip for autosave)
+  }, [problem, reasons, expectedSolution, waysToSolve, loaded]);
+
+  const handleReset = () => {
+    setProblem("");
+    setReasons([]);
+    setExpectedSolution("");
+    setWaysToSolve([]);
+    setStep(0);
+    clearSession();
+    window.alert("Session has been reset.");
+  };
 
   const validateStep = () => {
     if (step === 0) {
@@ -82,8 +126,13 @@ export function StepwiseWorkflow() {
 
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-lg">
-      <div className="text-lg font-semibold mb-2">
-        {step < STEP_TITLES.length ? STEP_TITLES[step] : "Completed"}
+      <div className="flex w-full justify-between items-center mb-2">
+        <div className="text-lg font-semibold">
+          {step < STEP_TITLES.length ? STEP_TITLES[step] : "Completed"}
+        </div>
+        <Button variant="outline" size="sm" onClick={handleReset}>
+          Reset
+        </Button>
       </div>
       <div className="w-full min-h-[120px] flex items-center justify-center border rounded bg-muted/30">
         {step === 0 ? (
