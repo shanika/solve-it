@@ -1,0 +1,157 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Role: A software developer who's an expert in Next.js application architecture and best practices.
+
+- **Clearly Separate Client and Server Components**
+  - **Server Components (default):**
+    - Do not use client-only hooks (`useState`, `useEffect`, etc.) or browser APIs (`window`, `document`) in Server Components.
+    - Server Components can fetch data, access environment variables, and perform secure operations.
+    - No `'use client'` directive at the top of the file.
+    - Example:
+      ```tsx filename="src/app/page.tsx"
+      // Server Component (default)
+      export default async function Page() {
+        const data = await fetchData();
+        return <div>{data.value}</div>;
+      }
+      ```
+  - **Client Components:**
+    - Add `'use client'` as the first line in the file.
+    - Use for interactivity, state, effects, and browser APIs.
+    - Do not import Server Components into Client Components (pass as props instead).
+    - Example:
+      ```tsx filename="src/components/LikeButton.tsx"
+      'use client';
+      import { useState } from 'react';
+      export default function LikeButton() {
+        const [likes, setLikes] = useState(0);
+        return <button onClick={() => setLikes(likes + 1)}>Like ({likes})</button>;
+      }
+      ```
+    - Usage in a Server Component:
+      ```tsx filename="src/app/page.tsx"
+      import LikeButton from '../components/LikeButton';
+      export default function Page() {
+        return <LikeButton />;
+      }
+      ```
+  - **Pass Server Components as children/props to Client Components, not via import:**
+    - Example:
+      ```tsx filename="src/components/ClientComponent.tsx"
+      'use client';
+      export default function ClientComponent({ children }: { children: React.ReactNode }) {
+        // ...
+        return <div>{children}</div>;
+      }
+      ```
+      ```tsx filename="src/app/page.tsx"
+      import ClientComponent from '../components/ClientComponent';
+      import ServerComponent from './ServerComponent';
+      export default function Page() {
+        return (
+          <ClientComponent>
+            <ServerComponent />
+          </ClientComponent>
+        );
+      }
+      ```
+  - **Never use browser APIs or client hooks in Server Components or Server Actions.**
+
+- **API Endpoints and Server Actions (Next.js 15+)**
+  - **Prefer Server Actions for mutations and secure logic:**
+    - Define server actions in files with `'use server'` at the top.
+    - Export async functions for each action.
+    - Validate and sanitize all inputs server-side (use `zod`, `joi`, etc.).
+    - Example:
+      ```ts filename="src/app/actions/user.ts"
+      'use server';
+      import { z } from 'zod';
+      export async function updateUserAction(formData: FormData) {
+        const schema = z.object({ name: z.string().min(1) });
+        const data = schema.parse({ name: formData.get('name') });
+        // ...update user in DB
+      }
+      ```
+    - Call server actions from Client Components (e.g., via form submission):
+      ```tsx filename="src/components/UserForm.tsx"
+      'use client';
+      import { updateUserAction } from '../app/actions/user';
+      export default function UserForm() {
+        return (
+          <form action={updateUserAction}>
+            <input name="name" />
+            <button type="submit">Update</button>
+          </form>
+        );
+      }
+      ```
+  - **For traditional API endpoints, use Route Handlers in `src/app/api/`**
+    - Use `export async function GET/POST/PUT/DELETE` in `route.ts` files.
+    - Example:
+      ```ts filename="src/app/api/user/route.ts"
+      import { NextRequest, NextResponse } from 'next/server';
+      export async function POST(req: NextRequest) {
+        const body = await req.json();
+        // ...handle logic
+        return NextResponse.json({ success: true });
+      }
+      ```
+    - **Note:** In Next.js 15, GET handlers are not cached by default. Opt-in with `export const dynamic = 'force-static'` if needed.
+
+- **Data Fetching Best Practices**
+  - **Prefer server-side data fetching in Server Components.**
+    - Use `fetch`, `cache`, and `server-only` for secure, efficient data access.
+    - Example:
+      ```ts filename="src/lib/get-item.ts"
+      import { cache } from 'react';
+      import 'server-only';
+      export const getItem = cache(async (id: string) => {
+        // ...fetch from DB
+      });
+      ```
+  - **Use parallel data fetching to avoid waterfalls:**
+    - Initiate multiple fetches before awaiting them.
+    - Example:
+      ```ts filename="src/app/page.tsx"
+      const userPromise = getUser();
+      const postsPromise = getPosts();
+      const [user, posts] = await Promise.all([userPromise, postsPromise]);
+      ```
+  - **Use Suspense and loading.js for progressive loading.**
+
+- **Security and Sensitive Data**
+  - **Never expose secrets or sensitive data to Client Components.**
+  - Use React's taint APIs (`experimental_taintObjectReference`, `experimental_taintUniqueValue`) to prevent accidental leaks (enable with `experimental.taint: true` in `next.config.ts`).
+  - Always validate and sanitize all client input on the server.
+
+- **Project Organization and Naming**
+  - **Organize server actions in an `src/app/actions/` directory.**
+  - Name server actions clearly (e.g., `updateUserAction`).
+  - Keep business logic and UI code separate.
+
+- **Configuration and Upgrades**
+  - Use `next.config.ts` for type-safe configuration.
+  - Use the codemod CLI for upgrades: `npx @next/codemod@canary upgrade latest`.
+  - For async request APIs, migrate to async usage of `cookies`, `headers`, etc.
+
+- **ESLint and Formatting**
+  - Use Next.js' built-in ESLint config (`next/core-web-vitals` or `next`).
+  - Add `prettier` to avoid conflicts: `{ "extends": ["next", "prettier"] }` in `.eslintrc.json`.
+
+- **Other Best Practices**
+  - Use the new `<Form>` component from `next/form` for enhanced forms with prefetching and client-side navigation.
+  - Use the `unstable_after` API for post-response server work (logging, analytics).
+  - Use the Static Route Indicator and build output to optimize static/dynamic routes.
+  - Keep Node.js version >= 18.18.0.
+
+---
+
+**References:**
+- [Next.js 15 Release Blog](mdc:https:/nextjs.org/blog/next-15)
+- [Next.js Data Fetching Patterns](mdc:https:/nextjs.org/docs/14/app/building-your-application/data-fetching/patterns)
+- [Next.js Server and Client Components](mdc:https:/nextjs.org/learn/react-foundations/server-and-client-components)
+- [Next.js API Routes and Route Handlers](mdc:https:/nextjs.org/docs/app/building-your-application/routing/route-handlers)
+- [Next.js Actions Best Practice](mdc:https:/medium.com/@lior_amsalem/nextjs-15-actions-best-practice-207ef6a2e52a)
