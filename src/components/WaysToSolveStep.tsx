@@ -41,9 +41,17 @@ export function WaysToSolveStep({
   };
 
   return (
-    <Card className="w-full">
+    <Card
+      className="w-full px-2 sm:px-4 md:px-8"
+      role="region"
+      aria-labelledby="ways-to-solve-step-title"
+    >
       <CardHeader>
-        <CardTitle>Ways to Solve</CardTitle>
+        <CardTitle>
+          <h2 id="ways-to-solve-step-title" className="text-lg font-semibold">
+            Ways to Solve
+          </h2>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="mb-4">
@@ -52,7 +60,10 @@ export function WaysToSolveStep({
             {problem}
           </div>
           <div className="font-medium mb-1">Reasons:</div>
-          <ul className="list-disc list-inside text-sm text-muted-foreground mb-2">
+          <ul
+            className="list-disc list-inside text-sm text-muted-foreground mb-2"
+            aria-label="List of reasons"
+          >
             {reasons.map((reason, idx) => (
               <li key={idx}>{reason}</li>
             ))}
@@ -68,6 +79,7 @@ export function WaysToSolveStep({
         <div className="flex gap-2 items-start">
           <Input
             id="way-input"
+            aria-label="Way to solve input"
             placeholder="Enter a way to solve..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -77,9 +89,13 @@ export function WaysToSolveStep({
               error || (touched && !input.trim()) ? "way-error" : undefined
             }
             onBlur={() => setTouched(true)}
-            className="flex-1"
+            className="flex-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           />
-          <Button type="button" onClick={handleAdd}>
+          <Button
+            type="button"
+            onClick={handleAdd}
+            className="min-w-[44px] min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary"
+          >
             Add
           </Button>
         </div>
@@ -88,7 +104,7 @@ export function WaysToSolveStep({
             {error || "Way to solve cannot be empty."}
           </div>
         )}
-        <ul className="mt-4 space-y-2">
+        <ul className="mt-4 space-y-2" aria-label="List of ways to solve">
           {ways.map((way, idx) => (
             <li key={idx} className="bg-accent rounded px-3 py-1 text-sm">
               {way}

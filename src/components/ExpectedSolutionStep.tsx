@@ -32,9 +32,20 @@ export function ExpectedSolutionStep({
   };
 
   return (
-    <Card className="w-full">
+    <Card
+      className="w-full px-2 sm:px-4 md:px-8"
+      role="region"
+      aria-labelledby="expected-solution-step-title"
+    >
       <CardHeader>
-        <CardTitle>Define Your Expected Solution</CardTitle>
+        <CardTitle>
+          <h2
+            id="expected-solution-step-title"
+            className="text-lg font-semibold"
+          >
+            Define Your Expected Solution
+          </h2>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="mb-4">
@@ -43,7 +54,10 @@ export function ExpectedSolutionStep({
             {problem}
           </div>
           <div className="font-medium mb-1">Reasons:</div>
-          <ul className="list-disc list-inside text-sm text-muted-foreground mb-2">
+          <ul
+            className="list-disc list-inside text-sm text-muted-foreground mb-2"
+            aria-label="List of reasons"
+          >
             {reasons.map((reason, idx) => (
               <li key={idx}>{reason}</li>
             ))}
@@ -54,7 +68,8 @@ export function ExpectedSolutionStep({
         </label>
         <textarea
           id="expected-solution"
-          className="w-full min-h-[80px] rounded border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+          aria-label="Expected solution input"
+          className="w-full min-h-[80px] rounded border px-3 py-2 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus:border-primary"
           placeholder="Describe your expected solution..."
           value={value}
           onChange={handleInput}

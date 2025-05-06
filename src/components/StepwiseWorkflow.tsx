@@ -1,6 +1,6 @@
 "use client";
 // Main client component for stepwise problem-solving workflow
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { ProblemEntryStep } from "./ProblemEntryStep";
 import { ReasonsStep } from "./ReasonsStep";
@@ -39,6 +39,8 @@ export function StepwiseWorkflow() {
     undefined
   );
   const [loaded, setLoaded] = useState(false);
+  const stepTitleRef = useRef<HTMLHeadingElement>(null);
+  const ariaLiveRef = useRef<HTMLDivElement>(null);
 
   // Load session on mount
   useEffect(() => {
@@ -64,8 +66,19 @@ export function StepwiseWorkflow() {
       waysToSolve,
     };
     saveSession(session);
-    // Optionally show a notification (window.alert is intrusive, so skip for autosave)
   }, [problem, reasons, expectedSolution, waysToSolve, loaded]);
+
+  // Announce step changes for screen readers
+  useEffect(() => {
+    if (ariaLiveRef.current) {
+      ariaLiveRef.current.textContent = `Step ${step + 1}: ${
+        STEP_TITLES[step]
+      }`;
+    }
+    if (stepTitleRef.current) {
+      stepTitleRef.current.focus();
+    }
+  }, [step]);
 
   const handleReset = () => {
     setProblem("");
@@ -125,16 +138,26 @@ export function StepwiseWorkflow() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 w-full max-w-lg">
+    <main
+      role="main"
+      className="flex flex-col items-center gap-6 w-full max-w-lg mx-auto px-2 sm:px-4 md:px-8 py-6 md:py-10"
+    >
       <div className="flex w-full justify-between items-center mb-2">
-        <div className="text-lg font-semibold">
+        <h1
+          ref={stepTitleRef}
+          tabIndex={-1}
+          className="text-lg font-semibold outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
           {step < STEP_TITLES.length ? STEP_TITLES[step] : "Completed"}
-        </div>
+        </h1>
         <Button variant="outline" size="sm" onClick={handleReset}>
           Reset
         </Button>
       </div>
-      <div className="w-full min-h-[120px] flex items-center justify-center border rounded bg-muted/30">
+      <div
+        className="w-full min-h-[120px] flex items-center justify-center border rounded bg-muted/30"
+        style={{ minHeight: 180 }}
+      >
         {step === 0 ? (
           <ProblemEntryStep
             value={problem}
@@ -166,21 +189,26 @@ export function StepwiseWorkflow() {
             error={waysToSolveError}
           />
         ) : (
-          <div className="flex flex-col items-center w-full p-8">
-            <div className="text-xl font-semibold mb-4 text-green-700">
+          <section className="flex flex-col items-center w-full p-8">
+            <h2 className="text-xl font-semibold mb-4 text-green-700">
               All steps completed!
-            </div>
-            <div className="text-base mb-2">
+            </h2>
+            <p className="text-base mb-2">
               You have finished the problem-solving workflow.
-            </div>
-            <div className="text-sm text-muted-foreground">
+            </p>
+            <p className="text-sm text-muted-foreground">
               Review your entries or start a new session as needed.
-            </div>
-          </div>
+            </p>
+          </section>
         )}
       </div>
-      <div className="flex gap-4 mt-4">
-        <Button onClick={prevStep} disabled={step === 0} variant="secondary">
+      <div className="flex gap-4 mt-4 w-full justify-center">
+        <Button
+          onClick={prevStep}
+          disabled={step === 0}
+          variant="secondary"
+          className="focus-visible:ring-2 focus-visible:ring-primary min-w-[44px] min-h-[44px]"
+        >
           Previous
         </Button>
         {step < STEP_TITLES.length - 1 && (
@@ -191,12 +219,17 @@ export function StepwiseWorkflow() {
               (step === 1 && reasons.length === 0) ||
               (step === 2 && !expectedSolution.trim())
             }
+            className="focus-visible:ring-2 focus-visible:ring-primary min-w-[44px] min-h-[44px]"
           >
             Next
           </Button>
         )}
         {step === STEP_TITLES.length - 1 && (
-          <Button onClick={nextStep} disabled={waysToSolve.length === 0}>
+          <Button
+            onClick={nextStep}
+            disabled={waysToSolve.length === 0}
+            className="focus-visible:ring-2 focus-visible:ring-primary min-w-[44px] min-h-[44px]"
+          >
             Finish
           </Button>
         )}
@@ -206,6 +239,12 @@ export function StepwiseWorkflow() {
           ? `Step ${step + 1} of ${STEP_TITLES.length}`
           : "Workflow complete"}
       </div>
-    </div>
+      <div
+        ref={ariaLiveRef}
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      />
+    </main>
   );
 }

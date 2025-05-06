@@ -37,9 +37,17 @@ export function ReasonsStep({
   };
 
   return (
-    <Card className="w-full">
+    <Card
+      className="w-full px-2 sm:px-4 md:px-8"
+      role="region"
+      aria-labelledby="reasons-step-title"
+    >
       <CardHeader>
-        <CardTitle>Brainstorm Reasons</CardTitle>
+        <CardTitle>
+          <h2 id="reasons-step-title" className="text-lg font-semibold">
+            Brainstorm Reasons
+          </h2>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="mb-4">
@@ -54,6 +62,7 @@ export function ReasonsStep({
         <div className="flex gap-2 items-start">
           <Input
             id="reason-input"
+            aria-label="Reason input"
             placeholder="Enter a reason..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -63,9 +72,13 @@ export function ReasonsStep({
               error || (touched && !input.trim()) ? "reason-error" : undefined
             }
             onBlur={() => setTouched(true)}
-            className="flex-1"
+            className="flex-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           />
-          <Button type="button" onClick={handleAdd}>
+          <Button
+            type="button"
+            onClick={handleAdd}
+            className="min-w-[44px] min-h-[44px] focus-visible:ring-2 focus-visible:ring-primary"
+          >
             Add
           </Button>
         </div>
@@ -74,7 +87,7 @@ export function ReasonsStep({
             {error || "Reason cannot be empty."}
           </div>
         )}
-        <ul className="mt-4 space-y-2">
+        <ul className="mt-4 space-y-2" aria-label="List of reasons">
           {reasons.map((reason, idx) => (
             <li key={idx} className="bg-accent rounded px-3 py-1 text-sm">
               {reason}

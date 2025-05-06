@@ -28,9 +28,17 @@ export function ProblemEntryStep({
   };
 
   return (
-    <Card className="w-full">
+    <Card
+      className="w-full px-2 sm:px-4 md:px-8"
+      role="region"
+      aria-labelledby="problem-step-title"
+    >
       <CardHeader>
-        <CardTitle>Describe Your Problem</CardTitle>
+        <CardTitle>
+          <h2 id="problem-step-title" className="text-lg font-semibold">
+            Describe Your Problem
+          </h2>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <label htmlFor="problem-statement" className="block font-medium mb-2">
@@ -38,7 +46,8 @@ export function ProblemEntryStep({
         </label>
         <textarea
           id="problem-statement"
-          className="w-full min-h-[80px] rounded border px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+          aria-label="Problem statement input"
+          className="w-full min-h-[80px] rounded border px-3 py-2 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus:border-primary"
           placeholder="Enter your problem statement..."
           value={value}
           onChange={handleInput}
