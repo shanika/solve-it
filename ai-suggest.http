@@ -1,0 +1,47 @@
+### Test valid request for step 2 (reasons)
+POST http://localhost:3000/api/ai-suggest
+Content-Type: application/json
+
+{
+  "step": 2,
+  "context": "I am often late to meetings.",
+  "userInput": "I want to understand why this happens."
+}
+
+### Test valid request for step 3 (expected solutions)
+POST http://localhost:3000/api/ai-suggest
+Content-Type: application/json
+
+{
+  "step": 3,
+  "context": "Problem: I am often late to meetings. Reasons: Poor time management, underestimating travel time.",
+  "userInput": "I want to be on time more consistently."
+}
+
+### Test valid request for step 4 (ways to solve)
+POST http://localhost:3000/api/ai-suggest
+Content-Type: application/json
+
+{
+  "step": 4,
+  "context": "Problem: I am often late to meetings. Reasons: Poor time management, underestimating travel time. Expected Solution: Arrive on time to all meetings.",
+  "userInput": "Looking for actionable steps."
+}
+
+### Test invalid request (missing fields)
+POST http://localhost:3000/api/ai-suggest
+Content-Type: application/json
+
+{
+  "step": 2
+}
+
+### Test invalid request (invalid step)
+POST http://localhost:3000/api/ai-suggest
+Content-Type: application/json
+
+{
+  "step": 1,
+  "context": "Some context",
+  "userInput": "Some input"
+} 
