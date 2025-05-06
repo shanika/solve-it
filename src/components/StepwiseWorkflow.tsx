@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { ProblemEntryStep } from "./ProblemEntryStep";
 import { ReasonsStep } from "./ReasonsStep";
+import { ExpectedSolutionStep } from "./ExpectedSolutionStep";
 
 const STEP_TITLES = [
   "Problem Entry",
@@ -22,6 +23,10 @@ export function StepwiseWorkflow() {
   const [reasonsError, setReasonsError] = useState<string | undefined>(
     undefined
   );
+  const [expectedSolution, setExpectedSolution] = useState("");
+  const [expectedSolutionError, setExpectedSolutionError] = useState<
+    string | undefined
+  >(undefined);
 
   const validateStep = () => {
     if (step === 0) {
@@ -37,6 +42,13 @@ export function StepwiseWorkflow() {
         return false;
       }
       setReasonsError(undefined);
+    }
+    if (step === 2) {
+      if (!expectedSolution.trim()) {
+        setExpectedSolutionError("Expected solution is required.");
+        return false;
+      }
+      setExpectedSolutionError(undefined);
     }
     return true;
   };
@@ -68,6 +80,14 @@ export function StepwiseWorkflow() {
             onAddReason={handleAddReason}
             error={reasonsError}
           />
+        ) : step === 2 ? (
+          <ExpectedSolutionStep
+            problem={problem}
+            reasons={reasons}
+            value={expectedSolution}
+            onChange={setExpectedSolution}
+            error={expectedSolutionError}
+          />
         ) : (
           <span className="text-muted-foreground text-base">
             {`Step ${step + 1}: ${STEP_TITLES[step]} (content coming soon)`}
@@ -82,7 +102,8 @@ export function StepwiseWorkflow() {
           onClick={nextStep}
           disabled={
             (step === 0 && !problem.trim()) ||
-            (step === 1 && reasons.length === 0)
+            (step === 1 && reasons.length === 0) ||
+            (step === 2 && !expectedSolution.trim())
           }
         >
           Next
