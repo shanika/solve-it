@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { ProblemEntryStep } from "./ProblemEntryStep";
 import { ReasonsStep } from "./ReasonsStep";
 import { ExpectedSolutionStep } from "./ExpectedSolutionStep";
+import { WaysToSolveStep } from "./WaysToSolveStep";
 
 const STEP_TITLES = [
   "Problem Entry",
@@ -27,6 +28,10 @@ export function StepwiseWorkflow() {
   const [expectedSolutionError, setExpectedSolutionError] = useState<
     string | undefined
   >(undefined);
+  const [waysToSolve, setWaysToSolve] = useState<string[]>([]);
+  const [waysToSolveError, setWaysToSolveError] = useState<string | undefined>(
+    undefined
+  );
 
   const validateStep = () => {
     if (step === 0) {
@@ -50,11 +55,18 @@ export function StepwiseWorkflow() {
       }
       setExpectedSolutionError(undefined);
     }
+    if (step === 3) {
+      if (waysToSolve.length === 0) {
+        setWaysToSolveError("Please add at least one way to solve.");
+        return false;
+      }
+      setWaysToSolveError(undefined);
+    }
     return true;
   };
 
   const nextStep = () => {
-    if (validateStep()) setStep((s) => Math.min(s + 1, STEP_TITLES.length - 1));
+    if (validateStep()) setStep((s) => Math.min(s + 1, STEP_TITLES.length));
   };
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
@@ -63,9 +75,16 @@ export function StepwiseWorkflow() {
     setReasonsError(undefined);
   };
 
+  const handleAddWay = (way: string) => {
+    setWaysToSolve((prev) => [...prev, way]);
+    setWaysToSolveError(undefined);
+  };
+
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-lg">
-      <div className="text-lg font-semibold mb-2">{STEP_TITLES[step]}</div>
+      <div className="text-lg font-semibold mb-2">
+        {step < STEP_TITLES.length ? STEP_TITLES[step] : "Completed"}
+      </div>
       <div className="w-full min-h-[120px] flex items-center justify-center border rounded bg-muted/30">
         {step === 0 ? (
           <ProblemEntryStep
@@ -88,29 +107,55 @@ export function StepwiseWorkflow() {
             onChange={setExpectedSolution}
             error={expectedSolutionError}
           />
+        ) : step === 3 ? (
+          <WaysToSolveStep
+            problem={problem}
+            reasons={reasons}
+            expectedSolution={expectedSolution}
+            ways={waysToSolve}
+            onAddWay={handleAddWay}
+            error={waysToSolveError}
+          />
         ) : (
-          <span className="text-muted-foreground text-base">
-            {`Step ${step + 1}: ${STEP_TITLES[step]} (content coming soon)`}
-          </span>
+          <div className="flex flex-col items-center w-full p-8">
+            <div className="text-xl font-semibold mb-4 text-green-700">
+              All steps completed!
+            </div>
+            <div className="text-base mb-2">
+              You have finished the problem-solving workflow.
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Review your entries or start a new session as needed.
+            </div>
+          </div>
         )}
       </div>
       <div className="flex gap-4 mt-4">
         <Button onClick={prevStep} disabled={step === 0} variant="secondary">
           Previous
         </Button>
-        <Button
-          onClick={nextStep}
-          disabled={
-            (step === 0 && !problem.trim()) ||
-            (step === 1 && reasons.length === 0) ||
-            (step === 2 && !expectedSolution.trim())
-          }
-        >
-          Next
-        </Button>
+        {step < STEP_TITLES.length - 1 && (
+          <Button
+            onClick={nextStep}
+            disabled={
+              (step === 0 && !problem.trim()) ||
+              (step === 1 && reasons.length === 0) ||
+              (step === 2 && !expectedSolution.trim())
+            }
+          >
+            Next
+          </Button>
+        )}
+        {step === STEP_TITLES.length - 1 && (
+          <Button onClick={nextStep} disabled={waysToSolve.length === 0}>
+            Finish
+          </Button>
+        )}
       </div>
       <div className="text-sm text-muted-foreground mt-2">
-        Step {step + 1} of {STEP_TITLES.length}
+        {step < STEP_TITLES.length
+          ? `Step ${step + 1} of ${STEP_TITLES.length}`
+          : "Workflow complete"}
       </div>
     </div>
   );
