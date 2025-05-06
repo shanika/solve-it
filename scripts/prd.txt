@@ -1,0 +1,95 @@
+<context>
+# Overview
+A web application that guides users through a structured problem-solving process. The app helps users clarify their problems, brainstorm reasons for the problem, define expected solutions, brainstorm possible approaches, and review all information at each step. The MVP focuses on a clear, stepwise user flow, with future enhancements leveraging OpenAI for AI-powered suggestions. The application must be fully responsive and mobile-friendly.
+
+# Core Features
+- **Stepwise Problem-Solving Flow**
+  - Users are prompted to enter their problem statement.
+  - The app then asks users to brainstorm and list possible reasons for the problem.
+  - Next, users specify their expected solution or outcome.
+  - Users are then prompted to brainstorm and list possible ways to solve the problem.
+  - At each step, previously entered information is clearly visible and easily referenced.
+- **Information Visibility**
+  - All prior answers are displayed in a sidebar or summary panel as the user progresses.
+  - Users can easily review and edit previous answers before final submission.
+- **Modern UI/UX**
+  - Use Shadcn UI components for all forms, buttons, lists, and layout.
+  - Responsive, accessible design with clear step indicators.
+  - The application must be fully responsive and mobile-friendly, providing an excellent experience on all device sizes.
+- **Copy-to-Input Functionality**
+  - For each brainstormed solution or AI suggestion, provide a one-click copy button to insert the text into the user's answer input box.
+- **API Security**
+  - All third-party API calls (e.g., OpenAI) are routed through secure Next.js API routes.
+
+# User Experience
+- **User Personas**
+  - Students, professionals, or anyone seeking a structured approach to problem-solving.
+- **Key User Flows**
+  - User lands on the homepage and starts a new problem-solving session.
+  - Step 1: Enter problem statement.
+  - Step 2: Brainstorm and list possible reasons for the problem.
+  - Step 3: Enter expected solution.
+  - Step 4: Brainstorm possible ways to solve the problem.
+  - At each step, a summary panel shows all previous answers.
+  - User can copy suggestions/options into the input box with one click.
+  - User can review and edit any step before finalizing.
+- **UI/UX Considerations**
+  - Use Shadcn stepper or progress indicator.
+  - Consistent, minimal, and distraction-free layout.
+  - Accessible forms and buttons.
+  - The application must be fully responsive and mobile-friendly, ensuring usability on smartphones, tablets, and desktops.
+
+<PRD>
+# Technical Architecture
+- **Frontend**: Next.js (App Router), React, Shadcn UI components.
+- **Backend/API**: Next.js API routes for all server-side logic and third-party API calls.
+- **State Management**: React context or lightweight state library for step data and summary panel.
+- **AI Integration (Enhancement)**: Next.js API route wraps OpenAI API (latest model) for suggestions at steps 2–4.
+- **Security**: Never expose API keys to the client; all AI calls go through server-side API routes.
+- **Copy-to-Input**: Use clipboard API and UI affordances for one-click copy.
+
+# Development Roadmap
+- **MVP**
+  - Implement stepwise flow: problem, brainstorm reasons, expected solution, brainstorm solutions.
+  - Display summary panel with all previous answers at each step.
+  - Use Shadcn UI for all components.
+  - Allow users to review and edit answers before submission.
+  - Implement copy-to-input for brainstormed options.
+  - Use Next.js API routes for any backend logic (no third-party API calls in MVP).
+  - Ensure the application is fully responsive and mobile-friendly.
+- **Enhancement**
+  - Integrate OpenAI (latest model) via secure API route to suggest answers for steps 2–4.
+  - Display AI suggestions with copy-to-input functionality.
+  - Add loading states and error handling for API calls.
+  - Consider user authentication for saving sessions (optional, not required for MVP).
+
+# Logical Dependency Chain
+- Set up Next.js project with Shadcn UI and basic routing.
+- Build stepwise flow and state management.
+- Implement summary panel and answer review/editing.
+- Add copy-to-input functionality.
+- (Enhancement) Add OpenAI integration via API route.
+- (Enhancement) Add AI suggestion UI and error handling.
+- Ensure responsiveness and mobile-friendliness throughout the app.
+
+# Risks and Mitigations
+- **AI API Cost/Rate Limits**: Mitigate by batching requests and providing clear user feedback on errors.
+- **Security**: Ensure all API keys are server-side only; never exposed to the client.
+- **UX Complexity**: Keep the stepwise flow simple and intuitive; test with real users on both desktop and mobile devices.
+- **Component Library Updates**: Monitor Shadcn UI for breaking changes.
+
+# Appendix
+- **References**
+  - Shadcn UI: https://ui.shadcn.com/
+  - Next.js API routes: https://nextjs.org/docs/app/building-your-application/routing/api-routes
+  - OpenAI API: https://platform.openai.com/docs/api-reference
+- **Sample User Flow**
+  1. User starts a session.
+  2. Enters problem statement.
+  3. Brainstorms and lists possible reasons for the problem.
+  4. Specifies expected solution.
+  5. Brainstorms possible solutions.
+  6. (Enhancement) Receives AI suggestions for steps 2–4.
+  7. Copies suggestions into input as needed.
+  8. Reviews and edits all answers before finalizing.
+</PRD> 
