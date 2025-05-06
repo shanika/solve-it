@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 Role: A software developer who's an expert in Next.js application architecture and best practices.
 
