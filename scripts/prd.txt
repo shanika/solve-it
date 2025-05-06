@@ -1,0 +1,114 @@
+<context>
+# Overview  
+A web application that guides users through a structured problem-solving process. The app prompts users to enter a problem, brainstorm reasons, define an expected solution, and identify actionable ways to solve the problem. At each step, previously entered information is clearly visible to the user, supporting context-rich, stepwise thinking. The MVP focuses on a seamless, user-friendly workflow; future enhancements will leverage Anthropic (Claude) to suggest answers for each step, with easy copy-to-input functionality. The app targets individuals and teams seeking clarity and structure in tackling personal, academic, or professional challenges.
+
+**The application must be fully responsive, optimized for mobile devices, and follow best UX practices throughout.**
+
+**Note: The Next.js project has already been initialized.**
+
+# Core Features  
+- **Stepwise Problem-Solving Workflow**
+  - Users are guided through four main steps: (1) Enter Problem, (2) Brainstorm Reasons, (3) Define Expected Solution, (4) Identify Ways to Solve.
+  - Each step is presented as a distinct UI section or card, with clear progress indication.
+  - Previously entered data is always visible and easily referenced when answering subsequent steps.
+- **Persistent, Contextual Display**
+  - All user inputs are displayed in a summary sidebar or above the current step, updating in real time.
+  - Users can edit previous answers before finalizing the process.
+- **Modern, Accessible, and Responsive UI**
+  - Use Shadcn UI components for all forms, buttons, cards, and layout elements.
+  - **The app must be fully responsive, providing an excellent experience on both desktop and mobile devices.**
+  - Follow best UX practices for layout, navigation, and feedback.
+  - Accessible color contrast, keyboard navigation, and ARIA labels.
+- **Copy-to-Input Functionality**
+  - For each suggested or previously entered option, provide a one-click copy button that pastes the value into the current input box.
+- **Anthropic Integration (Enhancement)**
+  - Use the latest Anthropic (Claude) model to suggest answers for steps 2-4 (reasons, expected solution, ways to solve).
+  - Suggestions are fetched via secure NextJS API routes (never expose API keys to the client).
+  - Users can copy suggestions directly into their input with one click.
+
+# User Experience  
+- **User Personas**
+  - Students, professionals, and anyone seeking a structured approach to problem-solving.
+- **Key User Flows**
+  1. User lands on the homepage and is prompted to enter a problem statement.
+  2. After submitting, the app displays the problem and asks the user to brainstorm reasons.
+  3. User enters reasons (multiple allowed), with the problem statement always visible.
+  4. Next, the app asks for the expected solution, showing the problem and reasons for context.
+  5. Finally, the app prompts for ways to solve, with all prior answers visible.
+  6. At each step, the user can review, edit, or copy previous answers.
+  7. (Enhancement) User can click to insert AI-suggested options into their answer box.
+- **UI/UX Considerations**
+  - Use Shadcn's Card, Stepper, and Input components for a clean, modern look.
+  - Progress bar or stepper at the top.
+  - Summary sidebar or sticky header for context.
+  - Smooth transitions between steps.
+  - Clear feedback on successful input, errors, and copy actions.
+  - **Mobile-first layout with touch-friendly controls.**
+  - **Follow best UX practices for accessibility, responsiveness, and usability on all devices.**
+
+</context>
+<PRD>
+# Technical Architecture  
+- **System Components**
+  - Next.js app (App Router, TypeScript)
+  - Shadcn UI for all components
+  - NextJS API routes for all server-side logic (Anthropic calls, data persistence if needed)
+  - (Optional for MVP) LocalStorage or simple backend for saving user sessions
+- **Client and Server Component Separation**
+  - **Strictly separate client and server components as per Next.js best practices.**
+  - **Browser-only libraries (e.g., state management, UI logic, libraries that access the DOM or window) must be imported and used only in client components.**
+  - **Server-side logic (e.g., API calls, database access, environment variables) must be handled in server components or API routes.**
+  - **Never import browser-only libraries or code into server components.**
+  - **Clearly mark files as 'use client' or server as appropriate.**
+- **Data Models**
+  - ProblemSession: { id, problem, reasons: string[], expectedSolution, waysToSolve: string[], createdAt, updatedAt }
+  - (Enhancement) User: { id, email, sessions: ProblemSession[] }
+- **APIs and Integrations**
+  - Secure NextJS API route for Anthropic (POST /api/ai-suggest, body: { step, context })
+  - Never expose Anthropic API keys to the client; all calls go through server-side API route
+  - (Optional) API routes for session persistence
+- **Infrastructure Requirements**
+  - Vercel or similar for deployment
+  - Environment variables for Anthropic API key
+  - (Optional) Database for user/session storage (MVP can use LocalStorage)
+  - **All UI must be fully responsive and optimized for mobile, following best UX and accessibility practices.**
+
+# Development Roadmap  
+- **MVP Requirements**
+  - **Remove all default code and boilerplate that comes with the initialized Next.js project before starting feature development.**
+  - **Ensure correct usage of client and server components: browser-only libraries and state management in client components; server access in server components or API routes.**
+  - Stepwise UI for problem, reasons, expected solution, ways to solve
+  - Contextual display of all previous answers at each step
+  - Shadcn UI for all components
+  - Copy-to-input for user-entered options
+  - Responsive, accessible design
+  - (Optional) LocalStorage for session persistence
+- **Future Enhancements**
+  - Anthropic (Claude) integration for AI-suggested answers (steps 2-4)
+  - User authentication and persistent sessions
+  - Shareable problem-solving sessions (public/private links)
+  - Export to PDF/Markdown
+  - Team collaboration (invite, comment)
+  - Analytics on problem-solving patterns
+- **Do not think about timelines; focus on scope and detail for each phase.**
+
+# Logical Dependency Chain
+- Foundation: Next.js app setup, Shadcn UI integration, stepwise navigation logic
+- Core: Implement each step (problem, reasons, expected solution, ways to solve) with contextual display
+- Usability: Add copy-to-input, responsive layout, accessibility
+- Enhancement: Add Anthropic API integration via secure API route
+- Optional: Add session persistence, user auth, sharing, export, collaboration
+- Prioritize getting a working, visually clear stepwise flow before adding AI or persistence features
+
+# Risks and Mitigations  
+- **Technical challenges**: Ensuring Anthropic API is only called server-side; mitigate by using NextJS API routes and never exposing keys
+- **MVP scope creep**: Focus on core stepwise flow and contextual display; defer AI and persistence to enhancement phase
+- **UI complexity**: Use Shadcn UI for consistency and rapid development
+- **Accessibility**: Test with keyboard and screen readers; use ARIA labels and semantic HTML
+- **Data loss (MVP)**: Warn users that sessions are not saved unless persistence is implemented
+
+# Appendix  
+- **Research findings**: Stepwise problem-solving improves clarity and solution quality; users benefit from seeing all context at each step
+- **Technical specifications**: Next.js 14+, TypeScript, Shadcn UI, Anthropic API (Claude 3 or latest)
+- **References**: https://ui.shadcn.com/, https://nextjs.org/, https://docs.anthropic.com/claude/docs
+</PRD> 
